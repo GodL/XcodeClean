@@ -4,7 +4,9 @@ import Foundation
 import Dispatch
 
 struct Clean: ParsableCommand {
-        
+    
+    static var configuration: CommandConfiguration = CommandConfiguration(commandName: "xclean")
+    
     func run() throws {
         
         var homePath = FileManager.default.homeDirectoryForCurrentUser
