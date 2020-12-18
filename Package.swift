@@ -8,6 +8,9 @@ let package = Package(
     platforms: [
         .macOS(.v10_12)
     ],
+    products: [
+        .executable(name: "xclean", targets: ["XcodeClean"])
+    ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "0.3.0"),
     ],
