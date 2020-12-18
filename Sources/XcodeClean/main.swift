@@ -13,9 +13,12 @@ struct Clean: ParsableCommand {
  
         homePath.appendPathComponent("Library/Developer")
         let xcodePath = homePath.appendingPathComponent("Xcode")
+        
         let devicePath = xcodePath.appendingPathComponent("DerivedData")
         let deviceSupportPath = xcodePath.appendingPathComponent("iOS DeviceSupport")
-
+        
+        let xcpgDevicePath = homePath.appendingPathComponent("XCPGDevices")
+        
         let simulatorPath = homePath.appendingPathComponent("CoreSimulator")
         let simulatorDevicePath = simulatorPath.appendingPathComponent("Devices")
         
@@ -28,14 +31,9 @@ struct Clean: ParsableCommand {
         print(">>>>>>>>>> begin clean <<<<<<<<<<")
 
         clean(at: devicePath.path)
-        try FileManager.default.contentsOfDirectory(atPath: deviceSupportPath.path).dropFirst().forEach {
-            clean(at: deviceSupportPath.path.appending("/\($0)"))
-        }
-        
-        try FileManager.default.contentsOfDirectory(atPath: simulatorDevicePath.path).dropFirst().forEach {
-            clean(at: simulatorDevicePath.path.appending("/\($0)"))
-        }
-        
+        clean(at: deviceSupportPath.path)
+        clean(at: xcpgDevicePath.path)
+        clean(at: simulatorDevicePath.path)
         
         do {
             let endXcodeSize = try getDirectorySize(at: xcodePath.path)
@@ -50,6 +48,10 @@ struct Clean: ParsableCommand {
     }
     
     func clean(at path: String) {
+        guard FileManager.default.fileExists(atPath: path) else {
+            print("there are no file at \(path)")
+            return
+        }
         do {
             print(">>>>>>>>>> cleaning at \(path) <<<<<<<<<<")
             try FileManager.default.removeItem(atPath: path)
