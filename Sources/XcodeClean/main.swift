@@ -42,9 +42,7 @@ struct Clean: ParsableCommand {
             let endSimulatorSize = try getDirectorySize(at: simulatorPath.path)
             
             let total = (beginXcodeSize - endXcodeSize) + (beginSimulatorSize - endSimulatorSize)
-            
-            print(" beginXcodeSize: \(beginXcodeSize) endXcodeSize: \(endXcodeSize) ")
-            
+                        
             print(">>>>>>>>>> It's cleaned up altogether \(Double(total) / 1024.0 / 1024.0) MB <<<<<<<<<<")
         }catch let error {
             print("Statistical error by: \(error)")
