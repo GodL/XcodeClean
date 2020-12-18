@@ -29,12 +29,15 @@ struct Clean: ParsableCommand {
         
         print(">>>>>>>>>> size: \(beginTotal) MB")
         print(">>>>>>>>>> begin clean <<<<<<<<<<")
-
-        clean(at: devicePath.path)
-        clean(at: deviceSupportPath.path)
-        clean(at: xcpgDevicePath.path)
-        clean(at: simulatorDevicePath.path)
         
+        let group = DispatchGroup()
+        let queue = DispatchQueue(label: "com.xclean.GodL", qos: .userInitiated, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil)
+
+        clean(at: devicePath.path, group: group, queue: queue)
+        clean(at: deviceSupportPath.path, group: group, queue: queue)
+        clean(at: xcpgDevicePath.path, group: group, queue: queue)
+        clean(at: simulatorDevicePath.path, group: group, queue: queue)
+        group.wait()
         do {
             let endXcodeSize = try getDirectorySize(at: xcodePath.path)
             let endSimulatorSize = try getDirectorySize(at: simulatorPath.path)
@@ -47,17 +50,22 @@ struct Clean: ParsableCommand {
         }
     }
     
-    func clean(at path: String) {
+    func clean(at path: String, group: DispatchGroup, queue: DispatchQueue) {
         guard FileManager.default.fileExists(atPath: path) else {
             print("there are no file at \(path)")
             return
         }
-        do {
-            print(">>>>>>>>>> cleaning at \(path) <<<<<<<<<<")
-            try FileManager.default.removeItem(atPath: path)
-            print(">>>>>>>>>> clean finished \(path) <<<<<<<<<<")
-        }catch let error {
-            print(">>>>>>>>>> cleaning failed \(path) with Error: \(error) <<<<<<<<<<")
+        group.enter()
+        queue.async(group: group, qos: .userInitiated, flags: .assignCurrentContext) {
+            do {
+                print(">>>>>>>>>> cleaning at \(path) <<<<<<<<<<")
+                try FileManager.default.removeItem(atPath: path)
+                group.leave()
+                print(">>>>>>>>>> clean finished \(path) <<<<<<<<<<")
+            }catch let error {
+                group.leave()
+                print(">>>>>>>>>> cleaning failed \(path) with Error: \(error) <<<<<<<<<<")
+            }
         }
     }
     

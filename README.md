@@ -1,6 +1,6 @@
 # XcodeClean
 
-A command line tool which clean Xcode cache.
+A command line tool which clean Xcode cache ( Using asynchronous ).
 
 ## Installation
 ### Option 1 (via [Mint](https://github.com/yonaskolb/Mint))
