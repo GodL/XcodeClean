@@ -21,11 +21,14 @@ struct Clean: ParsableCommand {
         
         let simulatorPath = homePath.appendingPathComponent("CoreSimulator")
         let simulatorDevicePath = simulatorPath.appendingPathComponent("Devices")
+        let simulatorCachePath = simulatorPath.appendingPathComponent("Caches")
+        
         
         print(">>>>>>>>>> Counting the size before cleaning <<<<<<<<<<<")
         let beginXcodeSize = try getDirectorySize(at: xcodePath.path)
         let beginXgpgSize = try getDirectorySize(at: xcpgDevicePath.path)
         let beginSimulatorSize = try getDirectorySize(at: simulatorPath.path)
+        
         let beginTotal = Double(beginXcodeSize + beginXgpgSize + beginSimulatorSize) / 1024.0 / 1024.0
         
         print(">>>>>>>>>> size: \(beginTotal) MB")
@@ -38,6 +41,7 @@ struct Clean: ParsableCommand {
         try clean(at: deviceSupportPath.path, group: group, queue: queue)
         try clean(at: xcpgDevicePath.path, group: group, queue: queue)
         try clean(at: simulatorDevicePath.path, group: group, queue: queue)
+        try clean(at: simulatorCachePath.path, group: group, queue: queue)
         group.wait()
         do {
             let endXcodeSize = try getDirectorySize(at: xcodePath.path)
